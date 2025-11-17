@@ -17,6 +17,7 @@ How would you explain to a budding developer what the drawbacks of using factory
 
 ## Response 1
 
+When we **instance** a new  **object** using a **factory function** there is nothing tying this object back to that function, so any `instanceof` checks would always evaluate to `false`. If there are any **methods** inside the factory function, whenever a new object is instanced, all the methods will also instanced as well, simply put this means that all the new objects will have their own methods taking space in memory. If we used a `class` instead, all the objects instanced from this `class` will share a connection to the prototype of the original `class`, saving space in memory.
 
 ---
 
@@ -26,6 +27,19 @@ Explain what factors you should consider when deciding to make a property/method
 
 ## Response 2
 
+Making **properties** and **methods** private promotes consistent and predictable **code**. If we were creating a `class` called `User`, and we wanted to have a `password` property inside of this class, we would expect this password to be private, which means that it could only be accessed from inside the **object** in which it was instanced. 
+
+This would look like the following: 
+```js
+class User {
+  #password;
+
+  construct(username, password) {
+    this.username = username;
+    this.#password = password;
+  }
+}
+```
 
 ---
 
@@ -34,6 +48,24 @@ Explain what factors you should consider when deciding to make a property/method
 Explain what factors you should consider when deciding to make a property/method static? Provide an example to support your response.
 
 ## Response 3
+Any **method** or **property** inside a class that is not going to use **instance** specific data, should be made **static**.
+
+For example, if I was creating a `class` called `User`, and I wanted to keep track of every new `User` **object** that was instanced, I would add a ` #totalUsers` **property** where I would keep count of all users, but this property wouldn't have to be instanced in all my new objects, so making it static is the right choice.
+
+This would look like the following:
+```js
+class User {
+  #password;
+  static #totalUsers = 0;
+  
+  construct(username, password) {
+    this.username = username;
+    this.#password = password;
+
+    #totalUsers++;
+  }
+}
+```
 
 ---
 
@@ -56,3 +88,19 @@ class Vault {
 Identify what the mistake is, explain why it is a problem, and suggest a way to fix it.
 
 ## Response 4
+
+We have a private `#secrets` **property** that is storing an **array** with secrets, but inside the `listSecrets` method we are returning a **reference** to this array, which opens the door to this array being **mutated** from outside of its own **object**'s scope. That makes this code unpredictable and inconsistent. 
+
+A fix for this would be to **return** a copy of the `#secrets` array using the **spread operator**. This would look like the following:
+
+```js
+class Vault {
+  #secrets = [];
+  addSecret(newSecret) {
+    this.#secrets.push(newSecret);
+  }
+  listSecrets() {
+    return [...this.#secrets];
+  }
+}
+```
